@@ -1,6 +1,6 @@
-# TinyLink
+# Shortlink
 
-TinyLink is a small URL shortener built for learning system design concepts with a simple Spring Boot backend, an Angular frontend, and Redis for caching and distributed rate-limit state.
+Shortlink is a small URL shortener built for learning system design concepts with a simple Spring Boot backend, an Angular frontend, and Redis for caching and distributed rate-limit state.
 
 This project is intentionally small and easy to inspect. It demonstrates request flow, redirects, caching, rate limiting, click analytics, scheduled cleanup, and containerized local development.
 
@@ -34,9 +34,9 @@ The current codebase uses in-memory Java collections as the main application sto
 ## Project Structure
 
 ```text
-tiny-link/
+shortlink/
 |-- backend/
-|   |-- src/main/java/com/shaybytes/tinylink/
+|   |-- src/main/java/com/shaybytes/Shortlink/
 |   |   |-- config/
 |   |   |-- controllers/
 |   |   |-- dto/
@@ -278,7 +278,7 @@ Purpose:
 
 TTL:
 
-- configured through `tinylink.cache.ttl-minutes`
+- configured through `Shortlink.cache.ttl-minutes`
 
 Even though URLs are not editable today, TTL is still useful for:
 
@@ -359,13 +359,13 @@ Main backend configuration is in:
 
 Key settings:
 
-- `tinylink.base-url`
-- `tinylink.short-code.length`
-- `tinylink.short-code.max-attempts`
-- `tinylink.cache.ttl-minutes`
-- `tinylink.rate-limit.requests-per-minute`
-- `tinylink.rate-limit.requests-per-hour`
-- `tinylink.cleanup.interval-minutes`
+- `Shortlink.base-url`
+- `Shortlink.short-code.length`
+- `Shortlink.short-code.max-attempts`
+- `Shortlink.cache.ttl-minutes`
+- `Shortlink.rate-limit.requests-per-minute`
+- `Shortlink.rate-limit.requests-per-hour`
+- `Shortlink.cleanup.interval-minutes`
 
 Redis connection settings use Spring Boot 3 style properties:
 
