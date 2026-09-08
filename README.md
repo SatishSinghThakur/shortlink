@@ -32,7 +32,7 @@ Redis: cache + shared rate-limit state
 
 Docker Compose: local orchestration
 
-#Project Structure
+# Project Structure
 Short-link/
 |-- backend/
 |   |-- src/main/java/com/shaybytes/tinylink/
