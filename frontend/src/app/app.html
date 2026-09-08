@@ -1,0 +1,597 @@
+﻿<main class="page" [attr.data-theme]="theme()">
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#workspace" aria-label="tiny-link home">
+        <span class="brand-mark" aria-hidden="true"
+          ><svg viewBox="0 0 24 24">
+            <path
+              d="m10 13 4-4M8 15l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 3 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"
+              transform="translate(1 1)"
+            /></svg
+        ></span>
+        tiny-link<span class="brand-dot">.</span>
+      </a>
+      <nav class="header-nav" aria-label="Main navigation">
+        <a href="#workspace">Workspace</a><a href="#recent-links">Your links</a>
+      </nav>
+      <button
+        class="icon-button theme-toggle"
+        type="button"
+        (click)="toggleTheme()"
+        [attr.aria-label]="theme() === 'light' ? 'Switch to dark theme' : 'Switch to light theme'"
+      >
+        @if (theme() === 'light') {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+            />
+          </svg>
+        }
+      </button>
+    </header>
+
+    <section class="hero" id="workspace" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> SMALL LINKS. BIG POSSIBILITIES.</p>
+        <h1 id="page-title">Shortlink.<br /><span>Go a little further.</span></h1>
+        <p class="lead">
+          Make every link easier to share. Create a memorable URL,<br class="desktop-break" />
+          give it a little personality, and see where it goes.
+        </p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="art-orbit orbit-one"></span><span class="art-orbit orbit-two"></span>
+        <div class="link-sculpture"><span></span><span></span></div>
+        <span class="art-label">LESS URL. MORE YOU.</span><span class="art-spark spark-one">+</span
+        ><span class="art-spark spark-two">+</span>
+      </div>
+    </section>
+
+    <section class="workspace-grid" aria-label="Link workspace">
+      <article class="card create-card">
+        <div class="section-heading">
+          <span class="section-icon" aria-hidden="true"
+            ><svg viewBox="0 0 24 24">
+              <path
+                d="m10 13 4-4M8 15l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 3 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"
+                transform="translate(1 1)"
+              /></svg
+          ></span>
+          <div>
+            <h2>Create a short link</h2>
+            <p>Good things come in small links.</p>
+          </div>
+          <span class="step-label">01 / CREATE</span>
+        </div>
+        <form id="shorten-form" [formGroup]="form" (ngSubmit)="shortenUrl()">
+          <div class="field">
+            <label for="original-url">Destination URL</label>
+            <div class="input-with-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
+              ><input
+                id="original-url"
+                formControlName="originalUrl"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                placeholder="Paste your long link here"
+                (blur)="normalizeDestination()"
+                [attr.aria-invalid]="!!fieldError('originalUrl')"
+                aria-describedby="url-hint url-error"
+              />
+            </div>
+            <p class="field-hint" id="url-hint">
+              A website, an article, your next big idea. Start with a URL.
+            </p>
+            <p class="field-error" id="url-error" [hidden]="!fieldError('originalUrl')">
+              {{ fieldError('originalUrl') }}
+            </p>
+          </div>
+          @if (destinationPreview(); as destination) {
+            <div class="destination-preview">
+              <span class="preview-indicator" aria-hidden="true"></span
+              ><span
+                >Linking to <strong>{{ destination.host }}</strong
+                ><span class="preview-path">{{ destination.path }}</span></span
+              >
+            </div>
+          }
+          <button
+            class="advanced-toggle"
+            type="button"
+            (click)="advancedOpen.set(!advancedOpen())"
+            [attr.aria-expanded]="advancedOpen()"
+            aria-controls="advanced-options"
+          >
+            <span
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 7h7m4 0h5M4 17h3m4 0h9" />
+                <circle cx="13" cy="7" r="2" />
+                <circle cx="9" cy="17" r="2" /></svg
+              >Make it yours <span class="optional">optional</span></span
+            ><svg
+              class="chevron"
+              [class.rotated]="advancedOpen()"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <div class="advanced-options" id="advanced-options" [hidden]="!advancedOpen()">
+            <div class="field">
+              <label for="custom-alias">Custom alias <span class="optional">optional</span></label>
+              <input
+                id="custom-alias"
+                formControlName="customAlias"
+                placeholder="your-next-big-idea"
+                autocomplete="off"
+                spellcheck="false"
+                [attr.aria-invalid]="!!fieldError('customAlias')"
+                aria-describedby="alias-hint alias-error"
+              />
+              <p class="field-hint" id="alias-hint">
+                Short-code preview: <span class="alias-preview">/api/{{ aliasPreview() }}</span>
+              </p>
+              <p class="field-error" id="alias-error" [hidden]="!fieldError('customAlias')">
+                {{ fieldError('customAlias') }}
+              </p>
+            </div>
+            <div class="field">
+              <span class="field-label" id="expiry-label">Link expiration</span>
+              <div class="preset-group" role="group" aria-labelledby="expiry-label">
+                <button
+                  type="button"
+                  [class.selected]="expiryPreset() === 'none'"
+                  [attr.aria-pressed]="expiryPreset() === 'none'"
+                  (click)="setExpiryPreset('none')"
+                >
+                  Never
+                </button>
+                <button
+                  type="button"
+                  [class.selected]="expiryPreset() === 'day'"
+                  [attr.aria-pressed]="expiryPreset() === 'day'"
+                  (click)="setExpiryPreset('day')"
+                >
+                  24 hours
+                </button>
+                <button
+                  type="button"
+                  [class.selected]="expiryPreset() === 'week'"
+                  [attr.aria-pressed]="expiryPreset() === 'week'"
+                  (click)="setExpiryPreset('week')"
+                >
+                  7 days
+                </button>
+                <button
+                  type="button"
+                  [class.selected]="expiryPreset() === 'month'"
+                  [attr.aria-pressed]="expiryPreset() === 'month'"
+                  (click)="setExpiryPreset('month')"
+                >
+                  30 days
+                </button>
+                <button
+                  type="button"
+                  [class.selected]="expiryPreset() === 'custom'"
+                  [attr.aria-pressed]="expiryPreset() === 'custom'"
+                  (click)="setExpiryPreset('custom')"
+                >
+                  Custom
+                </button>
+              </div>
+              <div class="custom-expiry" [hidden]="expiryPreset() !== 'custom'">
+                <label for="expires-at">Expires at</label
+                ><input
+                  id="expires-at"
+                  formControlName="expiresAt"
+                  type="datetime-local"
+                  [min]="minExpiry"
+                  [attr.aria-invalid]="!!fieldError('expiresAt')"
+                  aria-describedby="expiry-error"
+                />
+              </div>
+              <p class="field-hint">Uses the configured service time zone.</p>
+              <p class="field-error" id="expiry-error" [hidden]="!fieldError('expiresAt')">
+                {{ fieldError('expiresAt') }}
+              </p>
+            </div>
+          </div>
+          <button
+            class="primary-button create-button"
+            type="submit"
+            [disabled]="loading()"
+            [attr.aria-busy]="loading()"
+          >
+            @if (loading()) {
+              <span class="spinner" aria-hidden="true"></span> Creating your linkâ€¦
+            } @else {
+              Shorten link
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6" /></svg>
+            }
+          </button>
+          <p class="form-note">A shorter path to something worth sharing.</p>
+        </form>
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+        @if (result(); as link) {
+          <div class="created-result">
+            <p class="success-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg> Your
+              link is ready to go
+            </p>
+            <a
+              class="result-link"
+              [href]="link.shortUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ link.shortUrl }}</a
+            >
+            <p class="result-destination" [title]="link.originalUrl">{{ link.originalUrl }}</p>
+            <div class="result-actions">
+              <button class="secondary-button" type="button" (click)="copyLink(link.shortUrl)">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="8" y="8" width="12" height="12" rx="2" />
+                  <path d="M16 8V4H4v12h4" /></svg
+                >{{ copiedUrl() === link.shortUrl ? 'Copied!' : 'Copy link' }}</button
+              ><button class="text-button" type="button" (click)="viewStats(link.shortcode)">
+                View analytics <span aria-hidden="true"></span>
+              </button>
+              @if (canShare) {
+                <button class="text-button" type="button" (click)="shareLink(link)">Share</button>
+              }
+            </div>
+            <p class="field-hint">{{ formatExpiry(link.expiresAt) }}</p>
+          </div>
+        }
+      </article>
+
+      <article
+        class="card analytics-card"
+        id="analytics"
+        tabindex="-1"
+        aria-labelledby="analytics-title"
+      >
+        <div class="section-heading">
+          <span class="section-icon" aria-hidden="true"
+            ><svg viewBox="0 0 24 24"><path d="M5 20V10m7 10V4m7 16v-7" /></svg
+          ></span>
+          <div>
+            <h2 id="analytics-title">Follow the clicks</h2>
+            <p>Every click has somewhere to go.</p>
+          </div>
+          <span class="step-label">02 / EXPLORE</span>
+        </div>
+        <form class="stats-form" id="stats-form" [formGroup]="statsForm" (ngSubmit)="loadStats()">
+          <label for="stats-code">Short code or short link</label>
+          <div class="inline-form">
+            <input
+              id="stats-code"
+              formControlName="shortCode"
+              placeholder="Enter a code or paste a short link"
+              autocomplete="off"
+              spellcheck="false"
+            /><button
+              class="secondary-button"
+              type="submit"
+              [disabled]="statsLoading() || statsForm.invalid"
+              [attr.aria-busy]="statsLoading()"
+            >
+              {{ statsLoading() ? 'Loadingâ€¦' : 'Look up'
+              }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
+            </button>
+          </div>
+        </form>
+        @if (statsError()) {
+          <p class="error" role="alert">{{ statsError() }}</p>
+        }
+        @if (statsLoading() && !stats()) {
+          <div class="stats-skeleton" role="status" aria-label="Loading link statistics">
+            <span class="skeleton skeleton-short"></span
+            ><span class="skeleton skeleton-number"></span
+            ><span class="skeleton skeleton-chart"></span
+            ><span class="sr-only">Loading link statisticsâ€¦</span>
+          </div>
+        } @else if (stats(); as linkStats) {
+          <div class="stats-content">
+            <div class="stats-overview">
+              <div>
+                <p class="metric-label">TOTAL CLICKS</p>
+                <p class="click-count">{{ linkStats.clickCount }}</p>
+              </div>
+              <span class="status-badge" [class.inactive]="!statsActive()"
+                ><span></span>{{ statsActive() ? 'Active link' : 'Inactive link' }}</span
+              >
+            </div>
+            <div class="stats-destination">
+              <span class="field-hint">Destination</span>
+              <p [title]="linkStats.originalUrl">{{ linkStats.originalUrl }}</p>
+              <span class="field-hint"
+                >Created {{ linkStats.createdAt | date: 'MMM d, y' }} Â·
+                {{ formatExpiry(linkStats.expiresAt) }}</span
+              >
+            </div>
+            <div class="chart-heading">
+              <h3>Click activity</h3>
+              <div class="segment-control" role="group" aria-label="Activity time range">
+                <button
+                  type="button"
+                  [class.selected]="chartMode() === 'day'"
+                  [attr.aria-pressed]="chartMode() === 'day'"
+                  (click)="chartMode.set('day')"
+                >
+                  7 days</button
+                ><button
+                  type="button"
+                  [class.selected]="chartMode() === 'hour'"
+                  [attr.aria-pressed]="chartMode() === 'hour'"
+                  (click)="chartMode.set('hour')"
+                >
+                  By hour
+                </button>
+              </div>
+            </div>
+            @if (analyticsLoading()) {
+              <div class="skeleton skeleton-chart" role="status">
+                <span class="sr-only">Loading click activityâ€¦</span>
+              </div>
+            } @else if (analyticsError()) {
+              <p class="error" role="alert">{{ analyticsError() }}</p>
+            } @else if (hasChartClicks()) {
+              <p class="chart-caption">
+                {{ chartMode() === 'day' ? 'Last 7 calendar days' : 'By hour of day · all time' }}
+              </p>
+              <div
+                class="activity-chart"
+                [class.hour-chart]="chartMode() === 'hour'"
+                role="img"
+                [attr.aria-label]="
+                  chartMode() === 'day'
+                    ? 'Clicks during the last 7 days; values listed below'
+                    : 'Clicks grouped by hour of day across all dates; values listed below'
+                "
+              >
+                @for (bar of chartBars(); track $index) {
+                  <div class="chart-column">
+                    <div class="bar-track">
+                      <div
+                        class="chart-bar"
+                        [class.zero]="bar.count === 0"
+                        [style.height.%]="bar.height"
+                        [attr.title]="bar.label + ': ' + bar.count + ' clicks'"
+                      >
+                        <span class="bar-tooltip">{{ bar.count }} clicks</span>
+                      </div>
+                    </div>
+                    <span class="bar-label">{{ bar.label }}</span>
+                  </div>
+                }
+              </div>
+              <ul class="sr-only">
+                @for (bar of chartBars(); track $index) {
+                  <li>{{ bar.label }}: {{ bar.count }} clicks</li>
+                }
+              </ul>
+            } @else {
+              <div class="chart-empty">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 18h16M6 14l4-4 4 2 4-6" />
+                </svg>
+                <p>No clicks in this time range yet.</p>
+                <span>Share your link to get things moving.</span>
+              </div>
+            }
+            <div class="stats-footer">
+              <button
+                class="auto-refresh"
+                type="button"
+                role="switch"
+                [attr.aria-checked]="autoRefresh()"
+                (click)="toggleAutoRefresh()"
+              >
+                <span class="switch" [class.on]="autoRefresh()"><span></span></span
+                >Auto-refresh</button
+              ><button
+                class="text-button refresh-button"
+                type="button"
+                (click)="refreshStats()"
+                [disabled]="statsLoading() || analyticsLoading()"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M20 7v5h-5M4 17v-5h5m10-4a8 8 0 0 0-13-2l-2 3m16 6-2 3a8 8 0 0 1-13-2"
+                  /></svg
+                >Refresh
+              </button>
+            </div>
+            @if (lastUpdated(); as updated) {
+              <p class="updated-at">Updated {{ updated | date: 'shortTime' }}</p>
+            }
+          </div>
+        } @else {
+          <div class="analytics-empty">
+            <div class="empty-chart-icon" aria-hidden="true">
+              <span></span><span></span><span></span><span></span
+              ><svg viewBox="0 0 24 24"><path d="m5 16 5-5 4 2 5-8m-5 0h5v5" /></svg>
+            </div>
+            <h3>A little link. A bigger picture.</h3>
+            <p>
+              Look up a short code to see its clicks,<br />
+              activity over time, and current status.
+            </p>
+            <span class="empty-caption">Your linkâ€™s story starts with the first click.</span>
+          </div>
+        }
+      </article>
+    </section>
+
+    <section class="card history-card" id="recent-links" aria-labelledby="history-title">
+      <div class="history-header">
+        <div>
+          <div class="history-title">
+            <h2 id="history-title">Your recent links</h2>
+            <span class="count-badge">{{ recentLinks().length }}</span>
+          </div>
+          <p>Links from this browser, ready for their next adventure.</p>
+        </div>
+        <button
+          class="secondary-button export-button"
+          type="button"
+          (click)="exportHistory()"
+          [disabled]="filteredLinks().length === 0"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" /></svg
+          >Export CSV
+        </button>
+      </div>
+      <div class="history-toolbar">
+        <div class="input-with-icon search-input">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="m16 16 4 4" /></svg
+          ><input
+            type="search"
+            aria-label="Search your recent links"
+            placeholder="Find a link¦"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+          />
+        </div>
+        <label class="sort-control"
+          ><span class="sr-only">Sort recent links</span
+          ><select [value]="sortOrder()" (change)="sortOrder.set($any($event.target).value)">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select></label
+        >
+      </div>
+      @if (filteredLinks().length) {
+        <div class="history-list" role="list">
+          @for (link of filteredLinks(); track link.shortcode) {
+            <div class="history-row" role="listitem">
+              <span class="history-link-icon" aria-hidden="true"
+                ><svg viewBox="0 0 24 24">
+                  <path
+                    d="m10 13 4-4M8 15l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 3 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"
+                    transform="translate(1 1)"
+                  /></svg
+              ></span>
+              <div class="history-link-details">
+                <a [href]="link.shortUrl" target="_blank" rel="noopener noreferrer"
+                  >{{ link.shortUrl
+                  }}<svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 17 17 7M7 7h10v10" /></svg
+                ></a>
+                <p [title]="link.originalUrl">{{ link.originalUrl }}</p>
+                <span class="history-mobile-date"
+                  >{{ link.createdAt | date: 'MMM d, y' }} Â·
+                  {{ formatExpiry(link.expiresAt) }}</span
+                >
+              </div>
+              <div class="history-date">
+                <span>{{ link.createdAt | date: 'MMM d, y' }}</span
+                ><span>{{ formatExpiry(link.expiresAt) }}</span>
+              </div>
+              <div class="history-actions">
+                <button
+                  class="icon-button"
+                  type="button"
+                  (click)="copyLink(link.shortUrl)"
+                  [attr.aria-label]="
+                    copiedUrl() === link.shortUrl ? 'Link copied' : 'Copy ' + link.shortcode
+                  "
+                  [attr.title]="copiedUrl() === link.shortUrl ? 'Copied!' : 'Copy link'"
+                >
+                  @if (copiedUrl() === link.shortUrl) {
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="8" y="8" width="12" height="12" rx="2" />
+                      <path d="M16 8V4H4v12h4" />
+                    </svg>
+                  }</button
+                ><button
+                  class="icon-button"
+                  type="button"
+                  (click)="viewStats(link.shortcode)"
+                  [attr.aria-label]="'View analytics for ' + link.shortcode"
+                  title="View analytics"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 20V10m7 10V4m7 16v-7" />
+                  </svg></button
+                ><button
+                  class="icon-button forget-button"
+                  type="button"
+                  (click)="removeRecent(link.shortcode)"
+                  [attr.aria-label]="'Forget ' + link.shortcode + ' from browser history'"
+                  title="Forget from this browser"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 6 12 12M6 18 18 6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (searchQuery()) {
+        <div class="history-empty">
+          <h3>No links match that search.</h3>
+          <p>Try a different short code or destination.</p>
+          <button type="button" class="text-button" (click)="searchQuery.set('')">
+            Clear search
+          </button>
+        </div>
+      } @else {
+        <div class="history-empty">
+          <span class="empty-link" aria-hidden="true">â†—</span>
+          <h3>Your next great link goes here.</h3>
+          <p>Create your first short link above and weâ€™ll keep it handy here.</p>
+        </div>
+      }
+      <div class="history-footer">
+        <button
+          class="remember-toggle"
+          type="button"
+          role="switch"
+          [attr.aria-checked]="rememberHistory()"
+          (click)="toggleRememberHistory()"
+        >
+          <span class="switch" [class.on]="rememberHistory()"><span></span></span>Remember links on
+          this device
+        </button>
+        <p>
+          {{
+            rememberHistory()
+              ? 'Up to 30 links, saved only in this browser.'
+              : 'Off by default. Links stay here for this session.'
+          }}
+        </p>
+      </div>
+      @if (storageWarning()) {
+        <p class="storage-warning" role="status">{{ storageWarning() }}</p>
+      }
+    </section>
+    <footer class="site-footer">
+      <span class="footer-brand">tiny-link<span>.</span></span>
+      <p>Less to type. More to share.</p>
+      <a href="#workspace">Back to top <span aria-hidden="true">â†‘</span></a>
+    </footer>
+  </div>
+  <div class="toast-region" role="status" aria-live="polite" aria-atomic="true">
+    @if (notification()) {
+      <div class="toast">{{ notification() }}</div>
+    }
+  </div>
+</main>
